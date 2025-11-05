@@ -23,21 +23,3 @@ Cutr follows a microservice-friendly architecture and uses the following stack:
 
 Each shortened URL is stored in the database with a unique ID and creation timestamp. Redis caching ensures instant lookups and minimal latency.
 
----
-
-## 💡 API Example
-
-### Shorten a link
-**POST** `/shorten`
-```json
-{
-  "url": "https://example.com/some/very/long/link"
-}
-```
-
-**Response**
-```
-{
-  "short_url": "https://cutr.io/aB3xC9"
-}
-```
