@@ -1,5 +1,8 @@
 #include <controllers/link_controller.h>
 
+std::shared_ptr<cutr::service::LinkService> LinkController::linkService_ = nullptr;
+std::shared_ptr<cutr::service::RedirectService> LinkController::redirectService_ = nullptr;
+
 void LinkController::setServices(std::shared_ptr<cutr::service::LinkService> link,
                                  std::shared_ptr<cutr::service::RedirectService> redirect) {
     linkService_ = std::move(link);

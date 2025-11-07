@@ -12,8 +12,8 @@ public:
         ADD_METHOD_TO(LinkController::redirectToOriginal, "/{hash}", drogon::Get);
     METHOD_LIST_END
 
-    void setServices(std::shared_ptr<cutr::service::LinkService> link,
-                     std::shared_ptr<cutr::service::RedirectService> redirect);
+    static void setServices(std::shared_ptr<cutr::service::LinkService> link,
+                            std::shared_ptr<cutr::service::RedirectService> redirect);
 
     void createShortLink(const drogon::HttpRequestPtr &req,
                          std::function<void(const drogon::HttpResponsePtr &)> &&callback);
@@ -23,8 +23,8 @@ public:
                             const std::string &hash);
 
 private:
-    std::shared_ptr<cutr::service::LinkService> linkService_;
-    std::shared_ptr<cutr::service::RedirectService> redirectService_;
+    static std::shared_ptr<cutr::service::LinkService> linkService_;
+    static std::shared_ptr<cutr::service::RedirectService> redirectService_;
 };
 
 #endif //CUTR_LINK_CONTROLLER_H
