@@ -10,66 +10,38 @@ void LinkController::setServices(std::shared_ptr<cutr::service::LinkService> lin
 }
 
 
-void LinkController::createShortLink(const drogon::HttpRequestPtr &req,
-                                     std::function<void(const drogon::HttpResponsePtr &)> &&callback) {
-    auto handle = [req, callback = std::move(callback), this]() -> drogon::Task<void> {
-        try {
-            auto jsonReq = req->getJsonObject();
-            if (!jsonReq || !(*jsonReq)["url"].isString()) {
-                auto resp = drogon::HttpResponse::newHttpJsonResponse(
-                        Json::Value{{"error", "Missing 'url' in request"}}
-                );
-                resp->setStatusCode(drogon::k400BadRequest);
-                callback(resp);
-                co_return;
-            }
+drogon::Task<drogon::HttpResponsePtr> LinkController::createShortLink(
+        const drogon::HttpRequestPtr &req) {
+    auto jsonReq = req->getJsonObject();
+    if (!jsonReq || !(*jsonReq)["url"].isString()) {
+        co_return drogon::HttpResponse::newHttpJsonResponse(
+                Json::Value{{"error", "Missing 'url' in request"}}
+        );
+    }
 
-            std::string originalUrl = (*jsonReq)["url"].asString();
-            std::string shortCode = co_await linkService_->createShortLink(originalUrl);
+    std::string originalUrl = (*jsonReq)["url"].asString();
+    std::string shortCode = co_await linkService_->createShortLink(originalUrl);
 
-            Json::Value jsonResp;
-            jsonResp["shortCode"] = shortCode;
-
-            auto resp = drogon::HttpResponse::newHttpJsonResponse(jsonResp);
-            callback(resp);
-        } catch (const std::exception &e) {
-            auto resp = drogon::HttpResponse::newHttpJsonResponse(
-                    Json::Value{{"error", e.what()}}
-            );
-            resp->setStatusCode(drogon::k500InternalServerError);
-            callback(resp);
-        }
-        co_return;
-    };
-    handle();
+    Json::Value jsonResp;
+    jsonResp["shortCode"] = shortCode;
+    co_return drogon::HttpResponse::newHttpJsonResponse(jsonResp);
 }
 
-void LinkController::redirectToOriginal(const drogon::HttpRequestPtr &req,
-                                        std::function<void(const drogon::HttpResponsePtr &)> &&callback,
-                                        const std::string &hash) {
-    auto handle = [hash, callback = std::move(callback), this]() -> drogon::Task<void> {
-        try {
-            auto urlOpt = co_await redirectService_->getOriginalUrl(hash);
+drogon::Task<drogon::HttpResponsePtr> LinkController::redirectToOriginal(
+        const drogon::HttpRequestPtr &req,
+        const std::string &hash) {
+    auto urlOpt = co_await redirectService_->getOriginalUrl(hash);
 
-            if (!urlOpt.has_value()) {
-                auto resp = drogon::HttpResponse::newHttpResponse();
-                resp->setStatusCode(drogon::k404NotFound);
-                resp->setBody("Short link not found");
-                callback(resp);
-                co_return;
-            }
+    if (!urlOpt.has_value()) {
+        auto resp = drogon::HttpResponse::newHttpResponse();
+        resp->setStatusCode(drogon::k404NotFound);
+        resp->setBody("Short link not found");
+        co_return resp;
+    }
 
-            auto resp = drogon::HttpResponse::newHttpResponse();
-            resp->setStatusCode(drogon::k302Found);
-            resp->addHeader("Location", *urlOpt);
-            callback(resp);
-        } catch (const std::exception &e) {
-            auto resp = drogon::HttpResponse::newHttpResponse();
-            resp->setStatusCode(drogon::k500InternalServerError);
-            resp->setBody(e.what());
-            callback(resp);
-        }
-        co_return;
-    };
-    handle();
+    auto resp = drogon::HttpResponse::newHttpResponse();
+    resp->setStatusCode(drogon::k302Found);
+    resp->addHeader("Location", *urlOpt);
+    co_return resp;
 }
+
