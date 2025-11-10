@@ -1,25 +1,27 @@
-# 🪓 Cutr
+# CUTR
 
-**Cutr** is a lightweight and blazing-fast URL shortener written in **C++20** using the **Drogon** web framework.  
-It’s designed for developers who need a simple, transparent, and efficient way to shorten links — without unnecessary complexity.
+CUTR is a URL shortening service with support for storing and caching links in PostgreSQL and Redis. The application is written in C++ using the [Drogon](https://github.com/drogonframework/drogon) framework and is fully asynchronous.
 
----
+## Features
 
-## 🚀 Features
-- 🔗 Shorten long URLs into compact hashes
-- 💾 Persistent storage in **PostgreSQL**
-- ⚡ Caching layer powered by **Redis**
-- 🧩 REST API for easy integration
-- 📊 (Planned) Click tracking and analytics
+- Create short links for long URLs
+- Redirect from a short link to the original URL
+- Cache links in Redis to speed up redirects
+- Track link usage statistics (hit counts)
+- Persistent storage using PostgreSQL
 
----
+## Architecture
 
-## 🧠 Architecture
-Cutr follows a microservice-friendly architecture and uses the following stack:
-- **C++20**
-- **Drogon** web framework
-- **PostgreSQL** for persistent data storage
-- **Redis** for caching and hash de-duplication
+- **Controllers**: `LinkController` handles API endpoints for creating and redirecting links
+- **Services**: `LinkService` and `RedirectService` implement business logic
+- **Repositories**: interact with data through the `ILinkRepository` interface and concrete implementations for PostgreSQL and Redis
+- **Caching**: Redis is used for fast lookup and redirect
+- **Asynchronous**: all database and cache operations are performed in coroutines
 
-Each shortened URL is stored in the database with a unique ID and creation timestamp. Redis caching ensures instant lookups and minimal latency.
+## Installation
 
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your_username/cutr.git
+cd cutr
