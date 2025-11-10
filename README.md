@@ -18,10 +18,107 @@ CUTR is a URL shortening service with support for storing and caching links in P
 - **Caching**: Redis is used for fast lookup and redirect
 - **Asynchronous**: all database and cache operations are performed in coroutines
 
-## Installation
 
-1. Clone the repository:
+## API Examples
+
+Below are the primary endpoints exposed by CUTR.  
+All responses are JSON.
+
+### Create a short link
+
+**POST** `/shorten`
+
+#### Request body:
+
+```json
+{
+  "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+}
+```
+
+#### Example request:
+```bash
+curl -X POST http://localhost:8080/shorten \
+-H "Content-Type: application/json" \
+-d '{"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}'
+```
+
+#### Example response:
+```json
+{
+    "shortCode": "http://localhost:8080/r/AbC123"
+}
+```
+
+### Redirect to the original URL
+
+**GET** `/{short-code}`
+
+#### Example request:
+```bash
+curl http://localhost:8080/AbC123
+```
+
+#### Example response:
+```
+HTTP/1.1 302 Found
+Location: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+```
+
+If the short link does not exist:
+```
+HTTP/1.1 404 Not Found
+Short link not found
+```
+
+
+
+## Running with Docker
+
+CUTR provides a fully containerized setup using `docker-compose`.  
+This includes the application itself, PostgreSQL, and Redis.
+
+### 0. Clone the repository
+
+Make sure to clone the project together with all submodules:
 
 ```bash
-git clone https://github.com/your_username/cutr.git
+git clone --recurse-submodules https://github.com/capybaracplusplus/cutr.git
+```
+```bash
 cd cutr
+```
+
+### 1. Prepare the `.env` file
+
+Create a `.env` file in the project root:
+
+```env
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=cutr
+DB_PORT=5432
+
+REDIS_HOST=cutr-redis
+REDIS_PORT=6379
+
+LISTEN_ADDR=0.0.0.0
+LISTEN_PORT=8080
+```
+
+### 2. Build the containers
+
+Run the following command in the project directory:
+
+```bash
+docker-compose build --no-cache
+```
+
+```bash
+# Start in foreground (recommended for development)
+docker-compose up
+```
+
+```bash
+# Start in background
+docker-compose up -d
