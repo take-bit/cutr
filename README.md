@@ -5,11 +5,15 @@ CUTR is a URL shortening service with support for storing and caching links in P
 
 ## Screenshots
 
-**URL Input:**  
-![Input URL](pic/url_input.png)
+**URL Input:**
+<div align="center">
+  <img src="pic/url_input.png" alt="Input URL" width="400">
+</div>
 
-**Shortened Link:**  
-![Short Link](pic/short_link.png)
+**Shortened Link:**
+<div align="center">
+  <img src="pic/short_link.png" alt="Short Link" width="400">
+</div>
 
 ## Features
 
