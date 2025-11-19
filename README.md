@@ -2,6 +2,15 @@
 
 CUTR is a URL shortening service with support for storing and caching links in PostgreSQL and Redis. The application is written in C++ using the [Drogon](https://github.com/drogonframework/drogon) framework and is fully asynchronous.
 
+
+## Screenshots
+
+**URL Input:**  
+![Input URL](pic/url_input.png)
+
+**Shortened Link:**  
+![Short Link](pic/short_link.png)
+
 ## Features
 
 - Create short links for long URLs
