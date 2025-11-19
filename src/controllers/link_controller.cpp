@@ -23,7 +23,7 @@ drogon::Task<drogon::HttpResponsePtr> LinkController::createShortLink(
     std::string shortCode = co_await linkService_->createShortLink(originalUrl);
 
     Json::Value jsonResp;
-    jsonResp["shortCode"] = shortCode;
+    jsonResp["shortCode"] = "r/" + shortCode;
     co_return drogon::HttpResponse::newHttpJsonResponse(jsonResp);
 }
 
